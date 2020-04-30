@@ -70,6 +70,7 @@ function renderTasks() {
 
 function changeList(x) {
     socket.emit('changeList', { list: x.getAttribute("value")})
+    $('#list-name').text(x.getAttribute("value"))
     updateTasks()
 }
 
