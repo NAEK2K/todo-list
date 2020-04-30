@@ -30,7 +30,6 @@ io.on('connection', socket => {
     socket.on('tick', (data) => {
         db.get('tasks').find({ id: data.id}).assign({completed: !(db.get('tasks').find({ id: data.id}).get('completed').value())}).value()
         db.write()
-        console.log(db.get('tasks').value())
     })
     socket.on('clearChecked', () => {
         db.get('tasks').remove({ completed: true }).write()

@@ -4,21 +4,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <title>BZ Todo</title>
 </head>
 
 <body onload="updateTasks();">
-    <h1>BZ Todo</h1>
-    <h2>Tasks</h2>
-    <div id="tasks">
-        <ul>
-            
-        </ul>
+    <h2 style="text-align: center;">Tasks</h2>
+    <div class="card">
+        <div class="card-body">
+            <div id="tasks">
+                <ul>
+
+                </ul>
+            </div>
+            <p><button onclick="addTask()" type="button" class="btn btn-primary">Add</button>
+                <input type="text" id="task-input"></p>
+            <p><button onclick="clearChecked()" type="button" class="btn btn-primary">Clear Checked</button></p>
+        </div>
     </div>
-    <button onclick="addTask()">Add</button>
-    <input type="text" id="task-input">
-    <p><button onclick="clearChecked()">Clear Checked</button></p>
-    
+
     <!-- js -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
@@ -27,8 +32,8 @@
         var socket = io()
 
         function addTask() {
-            if($('#task-input').val() == '') return
-            socket.emit('addTask', {task : $('#task-input').val()})
+            if ($('#task-input').val() == '') return
+            socket.emit('addTask', { task: $('#task-input').val() })
             $('#task-input').val('')
             updateTasks()
         }
@@ -36,7 +41,7 @@
             socket.emit('updateTasks')
         }
         function tick(x) {
-            socket.emit('tick', {id: x.value})
+            socket.emit('tick', { id: x.value })
             updateTasks()
         }
         socket.on('updateTasks', (data) => {
@@ -48,11 +53,11 @@
             completed_tasks = []
             tasks.forEach(task => {
                 var newTask = $('<li class=\"task\"></li>').text(task.task)
-                if(task.completed == true) {
-                    newTask.prepend($(`<input type=\"checkbox\" value=\"${task.id}\" onclick=\"tick(this);\" checked>`))
+                if (task.completed == true) {
+                    newTask.prepend($(`<input type=\"checkbox\" value=\"${task.id}\" onclick=\"tick(this);\" checked><spacer>`))
                     completed_tasks.push(newTask)
-                } else if(task.completed == false) {
-                    newTask.prepend($(`<input type=\"checkbox\" value=\"${task.id}\" onclick=\"tick(this);\">`))
+                } else if (task.completed == false) {
+                    newTask.prepend($(`<input type=\"checkbox\" value=\"${task.id}\" onclick=\"tick(this);\"><spacer>`))
                     $('#tasks > ul').append(newTask)
                 }
             })
@@ -68,3 +73,23 @@
 </body>
 
 </html>
+
+<style>
+    body {
+        margin: auto;
+        max-width: 600px;
+    }
+
+    ul {
+        list-style-type: none;
+        padding-left: 0px;
+    }
+
+    input[type=checkbox] {
+        padding: 100px;
+    }
+
+    spacer {
+        padding-right: 10px;
+    }
+</style>
