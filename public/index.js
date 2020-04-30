@@ -50,7 +50,6 @@ function tick(x) {
 }
 
 function renderTasks() {
-    console.log(tasks)
     $('#tasks > ul').empty()
     var completed_tasks = []
     tasks.forEach(task => {
@@ -70,7 +69,6 @@ function renderTasks() {
 
 function changeList(x) {
     socket.emit('changeList', { list: x.getAttribute("value")})
-    $('#list-name').text(x.getAttribute("value"))
     updateTasks()
 }
 
@@ -94,5 +92,12 @@ socket.on('updateTasks', (data) => {
 
 socket.on('updateLists', (data) => {
     lists = data.lists
+    socket.emit('currentList')
     renderLists()
+})
+
+
+socket.on('currentList', (data) => {
+    console.log('t')
+    $('#list-name').text(`Current List: ${data.list}`)
 })

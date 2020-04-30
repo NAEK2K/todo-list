@@ -41,7 +41,10 @@ io.on('connection', socket => {
         socket.list = data.list
     })
     socket.on('addList', (data) => {
-        if(db.get('lists').value().includes(data.list)) return
+        if(db.get('lists').value().includes(data.list)) {
+            socket.list = data.list
+            return
+        }
         db.get('lists').push(data.list).write()
         socket.list = data.list
     })
@@ -50,6 +53,9 @@ io.on('connection', socket => {
         db.get('tasks').remove({list: data.list}).write()
         db.get('lists').pull(data.list).write()
         socket.list = 'Main'
+    })
+    socket.on('currentList', () => {
+        socket.emit('currentList', {list: socket.list})
     })
 })
 
