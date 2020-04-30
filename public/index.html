@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BZ Todo</title>
+</head>
+
+<body onload="updateTasks();">
+    <h1>BZ Todo</h1>
+    <h2>Tasks</h2>
+    <div id="tasks">
+        <ul>
+            
+        </ul>
+    </div>
+    <button onclick="addTask()">Add</button>
+    <input type="text" id="task-input">
+    <p><button onclick="clearChecked()">Clear Checked</button></p>
+    
+    <!-- js -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var tasks;
+        var socket = io()
+
+        function addTask() {
+            if($('#task-input').val() == '') return
+            socket.emit('addTask', {task : $('#task-input').val()})
+            $('#task-input').val('')
+            updateTasks()
+        }
+        function updateTasks() {
+            socket.emit('updateTasks')
+        }
+        function tick(x) {
+            socket.emit('tick', {id: x.value})
+            updateTasks()
+        }
+        socket.on('updateTasks', (data) => {
+            tasks = data.tasks
+            renderTasks()
+        })
+        function renderTasks() {
+            $('#tasks > ul').empty()
+            completed_tasks = []
+            tasks.forEach(task => {
+                var newTask = $('<li class=\"task\"></li>').text(task.task)
+                if(task.completed == true) {
+                    newTask.prepend($(`<input type=\"checkbox\" value=\"${task.id}\" onclick=\"tick(this);\" checked>`))
+                    completed_tasks.push(newTask)
+                } else if(task.completed == false) {
+                    newTask.prepend($(`<input type=\"checkbox\" value=\"${task.id}\" onclick=\"tick(this);\">`))
+                    $('#tasks > ul').append(newTask)
+                }
+            })
+            completed_tasks.forEach(task => {
+                $('#tasks > ul').append(task)
+            })
+        }
+        function clearChecked() {
+            socket.emit('clearChecked')
+            updateTasks()
+        }
+    </script>
+</body>
+
+</html>
