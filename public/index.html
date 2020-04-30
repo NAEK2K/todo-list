@@ -13,12 +13,26 @@
     <h2 style="text-align: center;">Tasks</h2>
     <div class="card">
         <div class="card-body">
+            <p><button onclick="addList()" type="button" class="btn btn-primary" id="addListBtn">Add List</button>
+                <input type="text" id="list-input">
+                <button onclick="removeList()" type="button" class="btn btn-danger">Remove List</button></p>
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                    Lists
+                </button>
+                <div class="dropdown-menu" id="lists">
+                    <a class="dropdown-item" href="#">Action</a>
+                </div>
+            </div>
+            
+            <p></p>
             <div id="tasks">
                 <ul>
 
                 </ul>
             </div>
-            <p><button onclick="addTask()" type="button" class="btn btn-primary">Add</button>
+            <p><button id="addTaskBtn" onclick="addTask()" type="button" class="btn btn-primary">Add Task</button>
                 <input type="text" id="task-input"></p>
             <p><button onclick="clearChecked()" type="button" class="btn btn-primary">Clear Checked</button></p>
         </div>
@@ -27,49 +41,13 @@
     <!-- js -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script>
-        var tasks;
-        var socket = io()
-
-        function addTask() {
-            if ($('#task-input').val() == '') return
-            socket.emit('addTask', { task: $('#task-input').val() })
-            $('#task-input').val('')
-            updateTasks()
-        }
-        function updateTasks() {
-            socket.emit('updateTasks')
-        }
-        function tick(x) {
-            socket.emit('tick', { id: x.value })
-            updateTasks()
-        }
-        socket.on('updateTasks', (data) => {
-            tasks = data.tasks
-            renderTasks()
-        })
-        function renderTasks() {
-            $('#tasks > ul').empty()
-            completed_tasks = []
-            tasks.forEach(task => {
-                var newTask = $('<li class=\"task\"></li>').text(task.task)
-                if (task.completed == true) {
-                    newTask.prepend($(`<input type=\"checkbox\" value=\"${task.id}\" onclick=\"tick(this);\" checked><spacer>`))
-                    completed_tasks.push(newTask)
-                } else if (task.completed == false) {
-                    newTask.prepend($(`<input type=\"checkbox\" value=\"${task.id}\" onclick=\"tick(this);\"><spacer>`))
-                    $('#tasks > ul').append(newTask)
-                }
-            })
-            completed_tasks.forEach(task => {
-                $('#tasks > ul').append(task)
-            })
-        }
-        function clearChecked() {
-            socket.emit('clearChecked')
-            updateTasks()
-        }
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <script src="index.js"></script>
 </body>
 
 </html>
@@ -83,10 +61,6 @@
     ul {
         list-style-type: none;
         padding-left: 0px;
-    }
-
-    input[type=checkbox] {
-        padding: 100px;
     }
 
     spacer {
